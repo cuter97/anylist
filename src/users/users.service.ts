@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import * as bcrypt from 'bcrypt';
@@ -33,8 +33,12 @@ export class UsersService {
         return [];
     }
 
-    findOne(id: string): Promise<User> {
-        throw new Error('findOne not implemented');
+    async findOneByEmail(email: string): Promise<User> {
+        try {
+            return await this.usersRepository.findOneByOrFail({ email });
+        } catch (error) {
+            throw new NotFoundException(`${email} not found`);
+        }
     }
 
     block(id: string): Promise<User> {
