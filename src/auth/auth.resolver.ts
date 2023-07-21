@@ -10,8 +10,9 @@ import { SignupInput } from './dto/inputs/signup.input';
 import { LoginInput } from './dto/inputs/login.input';
 import { CurrentUser } from './decorators/user.decorator';
 import { User } from 'src/users/entities/user.entity';
+import { ValidRoles } from './enums/valid-role.enum';
 
-@Resolver()
+@Resolver(() => AuthResponse)
 export class AuthResolver {
     constructor(private readonly authService: AuthService) { }
 
@@ -32,7 +33,7 @@ export class AuthResolver {
     @Query(() => AuthResponse , { name: 'revalidate' })
     @UseGuards(JwtAuthGuard)
     revalidateToken(
-        @CurrentUser() user: User
+        @CurrentUser([ValidRoles.admin]) user: User
     ): AuthResponse  {
         return this.authService.revalidateToken(user)
     }
