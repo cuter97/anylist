@@ -8,6 +8,8 @@ import { AuthResponse } from './types/auth-response.type';
 
 import { SignupInput } from './dto/inputs/signup.input';
 import { LoginInput } from './dto/inputs/login.input';
+import { CurrentUser } from './decorators/user.decorator';
+import { User } from 'src/users/entities/user.entity';
 
 @Resolver()
 export class AuthResolver {
@@ -30,9 +32,8 @@ export class AuthResolver {
     @Query(() => AuthResponse , { name: 'revalidate' })
     @UseGuards(JwtAuthGuard)
     revalidateToken(
-        // @CurrentUser user: User
+        @CurrentUser() user: User
     ): AuthResponse  {
-        // return this.authService.revalidateToken()
-        throw new Error('not implemented');
+        return this.authService.revalidateToken(user)
     }
 }
