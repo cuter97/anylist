@@ -31,7 +31,13 @@ export class UsersService {
     }
 
     async findAll(roles: ValidRoles[]): Promise<User[]> {
-        if (roles.length === 0) return this.usersRepository.find();
+        if (roles.length === 0)
+            return this.usersRepository.find({
+                // no es necesario porque tenemos lazy la propiedad lastUpdateBy
+                // relations: {
+                //     lastUpdateBy: true
+                // }
+            });
 
         return this.usersRepository.createQueryBuilder()
             .andWhere('ARRAY[roles] && ARRAY[:...roles]')  //see postgres documentation Array Functions and Operators
@@ -56,12 +62,18 @@ export class UsersService {
         }
     }
 
-    block(id: string): Promise<User> {
-        throw new Error('findOne not implemented');
+    async block(id: string, adminUser: User): Promise<User> {
+        const userToBlock = await this.findOneById(id);
+
+        userToBlock.isActive = false;
+        userToBlock.lastUpdateBy = adminUser;
+
+        return await this.usersRepository.save(userToBlock);
     }
 
     private handleDBError(error: any): never {
-        if (error.code === '23505') throw new BadRequestException(error.detail.replace('Key', ''));
+        if (error.code === '23505')
+            throw new BadRequestException(error.detail.replace('Key', ''));
 
         this.logger.error(error);
 
