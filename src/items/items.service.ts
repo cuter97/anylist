@@ -31,10 +31,18 @@ export class ItemsService {
         });
     }
 
-    async findOne(id: string): Promise<Item> {
-        const item = await this.itemsRepository.findOneBy({ id });
+    async findOne(id: string, user: User): Promise<Item> {
+        const item = await this.itemsRepository.findOneBy({
+            id,
+            user: {
+                id: user.id
+            }
+        });
 
         if (!item) throw new NotFoundException('Item not found');
+
+        // otra forma de hacer sin usar lazy en item.entity.ts
+        // item.user = user;
 
         return item;
     }
@@ -47,9 +55,9 @@ export class ItemsService {
         return this.itemsRepository.save(item);
     }
 
-    async remove(id: string): Promise<Item> {
+    async remove(id: string, user: User): Promise<Item> {
         //TODO: soft delete, integridad referencial
-        const item = await this.findOne(id);
+        const item = await this.findOne(id, user);
 
         await this.itemsRepository.remove(item);
 
