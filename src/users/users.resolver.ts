@@ -47,14 +47,14 @@ export class UsersResolver {
     updateUser(
         @Args('updateUserInput') updateUserInput: UpdateUserInput,
         @CurrentUser([ValidRoles.admin]) user: User
-        ): Promise<User> {
-            return this.usersService.update(updateUserInput.id, updateUserInput, user);
-        }
-        
-        @ResolveField(() => Int, { name: 'itemCount' })
-        async itemCount(
-            @CurrentUser([ValidRoles.admin]) adminUser: User,
-            @Parent() user: User
+    ): Promise<User> {
+        return this.usersService.update(updateUserInput.id, updateUserInput, user);
+    }
+
+    @ResolveField(() => Int, { name: 'itemCount' })
+    async itemCount(
+        @CurrentUser([ValidRoles.admin]) adminUser: User,
+        @Parent() user: User
     ): Promise<number> {
         return this.itemService.itemCountByUser(user);
     }
