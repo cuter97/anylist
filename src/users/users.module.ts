@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { ItemsModule } from 'src/items/items.module';
 import { UsersService } from './users.service';
 import { UsersResolver } from './users.resolver';
 import { User } from './entities/user.entity';
@@ -11,7 +12,8 @@ import { User } from './entities/user.entity';
         UsersService
     ],
     imports: [
-        TypeOrmModule.forFeature([User])
+        TypeOrmModule.forFeature([User]),
+        ItemsModule
     ],
     exports: [
         TypeOrmModule,
