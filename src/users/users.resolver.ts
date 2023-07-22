@@ -8,6 +8,7 @@ import { ValidRolesArgs } from './dto/args/roles.arg';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CurrentUser } from 'src/auth/decorators/user.decorator';
 import { ValidRoles } from 'src/auth/enums/valid-role.enum';
+import { UpdateUserInput } from './dto/update-user.input';
 
 @Resolver(() => User)
 @UseGuards(JwtAuthGuard)
@@ -36,5 +37,13 @@ export class UsersResolver {
         @CurrentUser([ValidRoles.admin]) user: User
     ): Promise<User> {
         return this.usersService.block(id, user);
+    }
+
+    @Mutation(() => User, { name: 'updateUser' })
+    updateUser(
+        @Args('updateUserInput') updateUserInput: UpdateUserInput,
+        @CurrentUser([ValidRoles.admin]) user: User
+    ): Promise<User> {
+        return this.usersService.update(updateUserInput.id, updateUserInput, user)
     }
 }

@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { SignupInput } from 'src/auth/dto/inputs/signup.input';
 import { ValidRoles } from 'src/auth/enums/valid-role.enum';
+import { UpdateUserInput } from './dto/update-user.input';
 
 @Injectable()
 export class UsersService {
@@ -43,7 +44,6 @@ export class UsersService {
             .andWhere('ARRAY[roles] && ARRAY[:...roles]')  //see postgres documentation Array Functions and Operators
             .setParameter('roles', roles)
             .getMany()
-
     }
 
     async findOneByEmail(email: string): Promise<User> {
@@ -69,6 +69,22 @@ export class UsersService {
         userToBlock.lastUpdateBy = adminUser;
 
         return await this.usersRepository.save(userToBlock);
+    }
+
+    async update(id: string, updateUserInput: UpdateUserInput, updateBy: User): Promise<User> {
+        try {
+            const user = await this.usersRepository.preload({
+                ...updateUserInput,
+                id
+            });
+
+            user.lastUpdateBy = updateBy;
+
+            return await this.usersRepository.save(user);
+            
+        } catch (error) {
+            this.handleDBError(error);
+        }
     }
 
     private handleDBError(error: any): never {
