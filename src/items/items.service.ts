@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { CreateItemInput } from './dto/create-item.input';
 import { UpdateItemInput } from './dto/update-item.input';
 import { Item } from './entities/item.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class ItemsService {
@@ -15,8 +16,8 @@ export class ItemsService {
         private readonly itemsRepository: Repository<Item>
     ) { }
 
-    async create(createItemInput: CreateItemInput): Promise<Item> {
-        const newItem = this.itemsRepository.create(createItemInput);
+    async create(createItemInput: CreateItemInput, user: User): Promise<Item> {
+        const newItem = this.itemsRepository.create({ ...createItemInput, user });
         return await this.itemsRepository.save(newItem);
     }
 
