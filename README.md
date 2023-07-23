@@ -29,3 +29,4 @@ yarn start:dev
 ```
   http://localhost:3000/graphql
 ```
+7. Ejecutar la ```mutation``` exeSeed para llenar la base de datos con info.

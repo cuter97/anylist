@@ -47,6 +47,9 @@ type Mutation {
   createItem(createItemInput: CreateItemInput!): Item!
   updateItem(updateItemInput: UpdateItemInput!): Item!
   removeItem(id: ID!): Item!
+
+  """run the database build"""
+  exeSeed: Boolean!
 }
 
 input SignupInput {
