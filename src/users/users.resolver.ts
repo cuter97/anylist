@@ -2,11 +2,14 @@ import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { Resolver, Query, Mutation, Args, ID, ResolveField, Int, Parent } from '@nestjs/graphql';
 
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+
 import { UsersService } from './users.service';
 import { ItemsService } from 'src/items/items.service';
+import { ListsService } from 'src/lists/lists.service';
 
 import { User } from './entities/user.entity';
 import { Item } from 'src/items/entities/item.entity';
+import { List } from 'src/lists/entities/list.entity';
 
 import { ValidRolesArgs } from './dto/args/roles.arg';
 import { UpdateUserInput } from './dto/update-user.input';
@@ -22,7 +25,8 @@ import { ValidRoles } from 'src/auth/enums/valid-role.enum';
 export class UsersResolver {
     constructor(
         private readonly usersService: UsersService,
-        private readonly itemService: ItemsService
+        private readonly itemService: ItemsService,
+        private readonly listsService: ListsService,
     ) { }
 
     @Query(() => [User], { name: 'users' })
@@ -65,6 +69,14 @@ export class UsersResolver {
         return this.itemService.itemCountByUser(user);
     }
 
+    @ResolveField(() => Int, { name: 'listCount' })
+    async listCount(
+        @CurrentUser([ValidRoles.admin]) adminUser: User,
+        @Parent() user: User
+    ): Promise<number> {
+        return this.listsService.listCountByUser(user);
+    }
+
     @ResolveField(() => [Item], { name: 'items' })
     async getItemsByUser(
         @CurrentUser([ValidRoles.admin]) adminUser: User,
@@ -73,6 +85,16 @@ export class UsersResolver {
         @Args() searchArgs: SearchArgs,
     ): Promise<Item[]> {
         return this.itemService.findAll(user, paginationArgs, searchArgs);
+    }
+
+    @ResolveField(() => [List], { name: 'lists' })
+    async getListByUser(
+        @CurrentUser([ValidRoles.admin]) adminUser: User,
+        @Parent() user: User,
+        @Args() paginationArgs: PaginationArgs,
+        @Args() searchArgs: SearchArgs,
+    ): Promise<List[]> {
+        return this.listsService.findAll(user, paginationArgs, searchArgs);
     }
 
 }
