@@ -2,10 +2,18 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type ListItem {
+  id: ID!
+  quantity: Float!
+  completed: Boolean!
+  item: Item!
+}
+
 type List {
   id: ID!
   name: String!
   user: User!
+  listItem: [ListItem!]!
 }
 
 type User {
@@ -26,6 +34,7 @@ type Item {
   name: String!
   quantityUnits: String
   user: User!
+  listItem: [ListItem!]!
 }
 
 type AuthResponse {
@@ -41,6 +50,7 @@ type Query {
   item(id: ID!): Item!
   lists(offset: Int = 0, limit: Int = 10, search: String): [List!]!
   list(id: ID!): List!
+  listItem(id: Int!): ListItem!
 }
 
 enum ValidRoles {
@@ -63,6 +73,9 @@ type Mutation {
 
   """run the database build"""
   exeSeed: Boolean!
+  createListItem(createListItemInput: CreateListItemInput!): ListItem!
+  updateListItem(updateListItemInput: UpdateListItemInput!): ListItem!
+  removeListItem(id: Int!): ListItem!
 }
 
 input SignupInput {
@@ -103,4 +116,15 @@ input CreateListInput {
 input UpdateListInput {
   name: String
   id: ID!
+}
+
+input CreateListItemInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateListItemInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
 }
