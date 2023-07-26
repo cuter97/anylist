@@ -49,19 +49,32 @@ export class ListItemService {
 
     async findOne(id: string): Promise<ListItem> {
         const listItem = await this.listItemRepository.findOneBy({ id });
-        
-        if(!listItem) throw new NotFoundException('List not found');
-        
+
+        if (!listItem) throw new NotFoundException('List not found');
+
         return listItem;
     }
 
-    // update(id: number, updateListItemInput: UpdateListItemInput) {
-    //     return `This action updates a #${id} listItem`;
-    // }
+    async update(id: string, updateListItemInput: UpdateListItemInput): Promise<ListItem> {
+        const { listId, itemId, ...rest } = updateListItemInput;
 
-    // remove(id: number) {
-    //     return `This action removes a #${id} listItem`;
-    // }
+        const queryBuilder = this.listItemRepository.createQueryBuilder()
+            .update()
+            .set(rest)
+            .where('id = :id', { id });
+
+        if (!listId) queryBuilder.set({
+            list: { id: listId }
+        });
+
+        if (!itemId) queryBuilder.set({
+            item: { id: itemId }
+        });
+
+        await queryBuilder.execute();
+
+        return this.findOne(id);
+    }
 
     async countListItemsByList(list: List): Promise<number> {
         return this.listItemRepository.count({
